@@ -9,6 +9,8 @@
 #ifndef FLASH_TESTS_H_
 #define FLASH_TESTS_H_
 
+#include <stdint.h>
+
 
 #define TEST_NOT_PERFORMED    	0
 #define TEST_RUNNING	     	1

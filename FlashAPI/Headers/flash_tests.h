@@ -61,7 +61,15 @@ test_result test_features(uint8_t features);
 test_result benchmark_features(uint8_t features);
 test_result profile_features(uint8_t features);
 
-
+/*
+ * Ensures that a test result is compliant with a certain standard.
+ * The standard argument may be user defined or chosen from:
+ * 		SCORE_CORE_FEATURES
+ * 		SCORE_BASIC_FEATURES
+ * 		SCORE_LEGACY_FEATURES
+ * 		SCORE_EXT_FEATURES
+ * 		SCORE_ALL_FEATURES
+ */
 uint8_t is_test_result_satisfying(test_result result, uint64_t standard);
 
 #endif /* FLASH_TESTS_H_ */

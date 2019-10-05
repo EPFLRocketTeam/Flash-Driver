@@ -61,6 +61,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "flash_state.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -145,19 +146,10 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USART6_UART_Init();
   MX_FATFS_Init();
-  /* USER CODE BEGIN 2 */
 
-  /* USER CODE END 2 */
+  flash_init_state();
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+  flash_fatal(0b10001010100010000000100010000000);
 }
 
 /**

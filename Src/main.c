@@ -61,7 +61,9 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+
 #include "flash_state.h"
+#include "io_driver.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -147,9 +149,11 @@ int main(void)
   MX_USART6_UART_Init();
   MX_FATFS_Init();
 
-  flash_init_state();
-  
-  flash_fatal(0b10001010100010000000100010000000);
+  flash_init_state_debugger();
+
+  flash_ready();
+
+  flash_init_driver();
 }
 
 /**

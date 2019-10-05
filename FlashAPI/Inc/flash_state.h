@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 
-void flash_init_state();
+void flash_init_state_debugger();
 
 void flash_ready();
 void flash_success();

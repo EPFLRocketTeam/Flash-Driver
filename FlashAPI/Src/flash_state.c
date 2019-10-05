@@ -40,7 +40,7 @@ void __led_init() {
 }
 
 
-void flash_init_state() {
+void flash_init_state_debugger() {
 	__led_init();
 }
 
@@ -58,7 +58,6 @@ void flash_error() {
 }
 
 void flash_fatal(uint32_t error_code) {
-
 	uint32_t error_reader = 0;
 
 	while(1) {
@@ -88,7 +87,7 @@ void flash_fatal(uint32_t error_code) {
 
 #else
 
-void flash_init_state() {}
+void flash_init_state_debugger() {}
 
 void flash_ready() {}
 void flash_success() {}

@@ -148,7 +148,7 @@ int main(void)
   MX_FATFS_Init();
 
   flash_init_state();
-
+  
   flash_fatal(0b10001010100010000000100010000000);
 }
 

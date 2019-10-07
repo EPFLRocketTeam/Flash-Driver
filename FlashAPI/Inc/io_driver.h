@@ -57,6 +57,11 @@ bool qspi_transmit(uint8_t* buffer);
 bool qspi_receive(uint8_t* buffer);
 
 
+void flash_read(uint32_t address, uint8_t* buffer, uint32_t length);
+void flash_write(uint32_t address, uint8_t* buffer, uint32_t length);
+void flash_erase_subsector(uint32_t address);
+void flash_erase_sector(uint32_t address);
+
 
 
 #endif /* IO_DRIVER_H_ */

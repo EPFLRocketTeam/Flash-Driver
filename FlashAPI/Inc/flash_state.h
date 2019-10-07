@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#include "flash.h"
+
 
 void flash_init_state_debugger();
 

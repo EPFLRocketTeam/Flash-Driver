@@ -63,7 +63,7 @@
 #include "gpio.h"
 
 #include "flash_state.h"
-#include "io_driver.h"
+#include "flash_tests.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -108,9 +108,6 @@ void SystemClock_Config(void);
   */
 
 
-#define DEBUG
-
-
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -152,11 +149,24 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   MX_USART6_UART_Init();
-  MX_FATFS_Init();
+
+
+  /*
+   * Disabled FATFS because it was provoking hard faults...
+   *
+   * MX_FATFS_Init();
+   */
 
   flash_init_state_debugger();
-
   flash_ready();
+
+  test_result result = test_features(FEATURE_READ);
+
+  if(is_test_result_satisfying(result, SCORE_CORE_FEATURES)) {
+	  flash_success();
+  } else {
+	  flash_error();
+  }
 }
 
 /**

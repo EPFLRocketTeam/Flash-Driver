@@ -9,5 +9,7 @@
 #define FLASH_H_
 
 
+#define DEBUG
+
 
 #endif /* FLASH_H_ */

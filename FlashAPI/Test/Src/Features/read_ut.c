@@ -5,6 +5,8 @@
  *      Author: Arion
  */
 
+#include "read_ut.h"
 
-
-
+uint8_t test_read() {
+	return 0;
+}

@@ -11,88 +11,168 @@
 #include "MT25QL128ABA.h"
 
 
-QSPI_CommandTypeDef __craft_standard_command() {
-	QSPI_CommandTypeDef command;
+/*
+ * Reads the flag status register and returns the value of the 8-bits register
+ */
+uint8_t __read_flags() {
+	Command cmd;
+	with_data(&cmd, 1);
 
-	command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
-	command.AddressMode = QSPI_ADDRESS_NONE;
-	command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-	command.DataMode = QSPI_DATA_NONE;
-	command.DummyCycles = 0;
-	command.DdrMode = QSPI_DDR_MODE_DISABLE;
-	command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
-  	command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+	if(!qspi_run(&cmd, READ_FLAG_STATUS_REGISTER)) {
+		flash_fatal(ERROR_READ | ERROR_RUN);
+	}
 
-	return command;
-}
+	uint8_t flags;
 
-QSPI_AutoPollingTypeDef __craft_standard_poller() {
-	QSPI_AutoPollingTypeDef poller;
+	if(!qspi_receive(&flags)) {
+		flash_fatal(ERROR_READ | ERROR_RECEIVE);
+	}
 
-	poller.MatchMode = QSPI_MATCH_MODE_AND;
-	poller.StatusBytesSize = 1;
-	poller.Interval = 0x10;
-	poller.AutomaticStop = QSPI_AUTOMATIC_STOP_ENABLE;
-
-	return poller;
+	return flags;
 }
 
 
-void __check_status_bit(uint8_t bit, bool value) {
-	QSPI_CommandTypeDef command = __craft_standard_command();
-	QSPI_AutoPollingTypeDef polling = __craft_standard_poller();
 
-	polling.Match = value << bit;
-	polling.Mask = 1 << bit;
+/*
+ * Enables the write latch.
+ * This function must be called before each PROGRAM or ERASE operation.
+ */
+bool __write_enable_latch() {
+	Command cmd;
+	return qspi_run(&cmd, WRITE_ENABLE_LATCH) && qspi_poll(&cmd, READ_STATUS_REGISTER, 1, true);
+}
 
-	command.Instruction = READ_STATUS_REGISTER;
-	command.DataMode = QSPI_DATA_1_LINE;
+/*
+ * Call this function to prevent data corruption when a hardware fault (e.g. protection fault) occurs.
+ * Please refer to the documentation for details.
+ */
+bool __write_disable_latch() {
+	Command cmd;
+	return qspi_run(&cmd, WRITE_ENABLE_LATCH);
+}
 
-	if(HAL_QSPI_AutoPolling(&hqspi, &command, &polling, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK) {
-		flash_fatal(0b1010);
+
+
+/*
+ *
+ * --- Read operations ---
+ *
+ * Test providers:
+ * 	 - read_ut.c
+ *
+ */
+
+void flash_read(uint32_t address, uint8_t* buffer, uint32_t length) {
+	Command cmd;
+	with_address(&cmd, address);
+	with_data(&cmd, length);
+
+
+	if(!qspi_run(&cmd, READ_SINGLE)) {
+		flash_fatal(ERROR_READ | ERROR_RUN);
+	}
+
+	if(!qspi_receive(buffer)) {
+		flash_fatal(ERROR_READ | ERROR_RECEIVE);
 	}
 }
 
-void __write_enable_latch() {
-	QSPI_CommandTypeDef command = __craft_standard_command();
 
-	command.Instruction = WRITE_ENABLE_LATCH;
 
-	if(HAL_QSPI_Command(&hqspi, &command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK) {
-		flash_fatal(0b10);
+/*
+ *
+ * --- Write operations ---
+ *
+ * Test providers:
+ * 	 - write_ut.c
+ *
+ */
+
+void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
+	__write_enable_latch();
+
+	Command cmd = DefaultCommand;
+
+	with_address(&cmd, address);
+	with_data(&cmd, length);
+
+	if(!qspi_run(&cmd, WRITE_SINGLE)) {
+		flash_fatal(ERROR_WRITE | ERROR_RUN);
 	}
 
-	__check_status_bit(1, true);
-}
+	if(!qspi_transmit(buffer)) {
+		flash_fatal(ERROR_WRITE | ERROR_TRANSMIT);
+	}
 
-void __write_disable_latch() {
-	QSPI_CommandTypeDef command = __craft_standard_command();
+	cmd = DefaultCommand;
+	with_data(&cmd, 1);
 
-	command.Instruction = WRITE_DISABLE_LATCH;
+	// Waits for the busy bit (bit 0) to be reset to 0
+	if(!qspi_poll(&cmd, READ_STATUS_REGISTER, 0, false)) {
+		flash_fatal(ERROR_WRITE | ERROR_STATE);
+	}
 
-	if(HAL_QSPI_Command(&hqspi, &command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK) {
-		flash_fatal(0b10);
+	uint8_t flags = __read_flags();
+
+	// Checks if the protection fault flag is set
+	if(flags & (1 << 4)) {
+		__write_disable_latch(); // Manually reset the latch
+
+		flash_fatal(ERROR_WRITE | ERROR_STATE);
 	}
 }
 
-void flash_erase_sector(uint8_t address) {
-	__write_enable_latch(&hqspi);
 
-	QSPI_CommandTypeDef command = __craft_standard_command();
 
-	command.Instruction = SECTOR_ERASE;
-	command.Address = address;
+/*
+ *
+ * --- Erase operations ---
+ *
+ * Test providers:
+ * 	 - erase_ut.c
+ *
+ */
 
-	if(HAL_QSPI_Command_IT(&hqspi, &command) != HAL_OK) {
-		flash_fatal(0b10101010);
+void __flash_erase(uint32_t instruction, uint32_t address) {
+	__write_enable_latch();
+
+	Command cmd = DefaultCommand;
+	with_address(&cmd, address);
+
+	if(!qspi_run(&cmd, instruction)) {
+		flash_fatal(ERROR_ERASE | ERROR_RUN);
+	}
+
+	cmd = DefaultCommand;
+	with_data(&cmd, 1);
+
+	if(!qspi_poll(&cmd, READ_STATUS_REGISTER, 0, 0)) {
+		flash_fatal(ERROR_ERASE | ERROR_STATE);
+	}
+
+	uint8_t flags = __read_flags();
+
+	// Checks if the protection fault flag is set
+	if(flags & (1 << 5)) {
+		__write_disable_latch(); // Manually reset the latch
+
+		flash_fatal(ERROR_ERASE | ERROR_STATE);
 	}
 }
 
-void flash_init_driver() {
-	__write_enable_latch(&hqspi);
-	__write_disable_latch(&hqspi);
+/*
+ * Erases the whole sector represented by the provided address.
+ * The address may be any of those within the sector.
+ */
+void flash_erase_sector(uint32_t address) {
+	__flash_erase(ERASE_SECTOR, address);
+}
 
 
-	flash_success();
-
+/*
+ * Erases the whole sub-sector represented by the provided address.
+ * The address may be any of those within the sub-sector.
+ */
+void flash_erase_subsector(uint32_t address) {
+	__flash_erase(ERASE_SUBSECTOR, address);
 }

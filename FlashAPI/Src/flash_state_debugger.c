@@ -11,9 +11,6 @@
 #include "gpio.h"
 
 
-#define DEBUG
-
-
 #define TIMER TIM8
 #define FATAL_PULSE_DELAY 100
 

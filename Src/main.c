@@ -106,6 +106,11 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
+
+
+#define DEBUG
+
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -152,8 +157,6 @@ int main(void)
   flash_init_state_debugger();
 
   flash_ready();
-
-  flash_init_driver();
 }
 
 /**

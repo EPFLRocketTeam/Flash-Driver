@@ -11,7 +11,7 @@
 uint8_t test_read() {
 	uint8_t buffer[256];
 
-	flash_read(TEST_ADDR_BEGIN, buffer, 256);
+	flash_read(TEST_GENTLE_ADDR, buffer, 256);
 
 	return 0;
 }

@@ -15,7 +15,7 @@
  * Reads the flag status register and returns the value of the 8-bits register
  */
 uint8_t __read_flags() {
-	Command cmd;
+	Command cmd = get_default_command();
 	with_data(&cmd, 1);
 
 	if(!qspi_run(&cmd, READ_FLAG_STATUS_REGISTER)) {
@@ -38,7 +38,7 @@ uint8_t __read_flags() {
  * This function must be called before each PROGRAM or ERASE operation.
  */
 bool __write_enable_latch() {
-	Command cmd;
+	Command cmd = get_default_command();
 	return qspi_run(&cmd, WRITE_ENABLE_LATCH) && qspi_poll(&cmd, READ_STATUS_REGISTER, 1, true);
 }
 
@@ -47,7 +47,7 @@ bool __write_enable_latch() {
  * Please refer to the documentation for details.
  */
 bool __write_disable_latch() {
-	Command cmd;
+	Command cmd = get_default_command();
 	return qspi_run(&cmd, WRITE_ENABLE_LATCH);
 }
 
@@ -63,7 +63,7 @@ bool __write_disable_latch() {
  */
 
 void flash_read(uint32_t address, uint8_t* buffer, uint32_t length) {
-	Command cmd;
+	Command cmd = get_default_command();
 	with_address(&cmd, address);
 	with_data(&cmd, length);
 
@@ -91,7 +91,7 @@ void flash_read(uint32_t address, uint8_t* buffer, uint32_t length) {
 void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
 	__write_enable_latch();
 
-	Command cmd = DefaultCommand;
+	Command cmd = get_default_command();
 
 	with_address(&cmd, address);
 	with_data(&cmd, length);
@@ -104,7 +104,7 @@ void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
 		flash_fatal(ERROR_WRITE | ERROR_TRANSMIT);
 	}
 
-	cmd = DefaultCommand;
+	cmd = get_default_command();
 	with_data(&cmd, 1);
 
 	// Waits for the busy bit (bit 0) to be reset to 0
@@ -136,14 +136,14 @@ void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
 void __flash_erase(uint32_t instruction, uint32_t address) {
 	__write_enable_latch();
 
-	Command cmd = DefaultCommand;
+	Command cmd = get_default_command();
 	with_address(&cmd, address);
 
 	if(!qspi_run(&cmd, instruction)) {
 		flash_fatal(ERROR_ERASE | ERROR_RUN);
 	}
 
-	cmd = DefaultCommand;
+	cmd = get_default_command();
 	with_data(&cmd, 1);
 
 	if(!qspi_poll(&cmd, READ_STATUS_REGISTER, 0, 0)) {

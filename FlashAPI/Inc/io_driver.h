@@ -44,8 +44,7 @@ typedef struct Command {
 	QSPI_CommandTypeDef qspi_command;
 } Command;
 
-extern const Command DefaultCommand;
-
+Command get_default_command();
 
 
 void with_address(Command* cmd, uint32_t address);

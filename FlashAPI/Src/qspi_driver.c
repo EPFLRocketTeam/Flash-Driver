@@ -60,6 +60,8 @@ bool qspi_poll(Command* cmd, uint32_t instruction, uint8_t bit, bool value) {
 	poller.Match = value << bit;
 	poller.Mask = 1 << bit;
 
+	cmd->qspi_command.Instruction = instruction;
+
 	return HAL_QSPI_AutoPolling(&hqspi, &(cmd->qspi_command), &poller, IO_TIMEOUT) == HAL_OK;
 }
 

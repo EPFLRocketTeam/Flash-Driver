@@ -39,7 +39,18 @@ uint8_t __read_flags() {
  */
 bool __write_enable_latch() {
 	Command cmd = get_default_command();
-	return qspi_run(&cmd, WRITE_ENABLE_LATCH) && qspi_poll(&cmd, READ_STATUS_REGISTER, 1, true);
+
+	if(qspi_run(&cmd, WRITE_ENABLE_LATCH)) {
+		cmd = get_default_command();
+
+		with_data(&cmd, 1);
+
+		if(qspi_poll(&cmd, READ_STATUS_REGISTER, 1, true)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /*
@@ -134,12 +145,30 @@ void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
  */
 
 void __flash_erase(uint32_t instruction, uint32_t address) {
+	/*QSPI_CommandTypeDef cmd1 = {
+		.Instruction = WRITE_ENABLE_LATCH,
+		.InstructionMode = QSPI_INSTRUCTION_1_LINE,
+		.AddressMode = QSPI_ADDRESS_NONE,
+		.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE,
+		.DataMode = QSPI_DATA_NONE,
+		.DummyCycles = 0,
+		.DdrMode = QSPI_DDR_MODE_DISABLE,
+		.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY,
+		.SIOOMode = QSPI_SIOO_INST_EVERY_CMD
+	};
+
+	if(HAL_QSPI_Command(&hqspi, &cmd1, IO_TIMEOUT) != HAL_OK) {
+		while(1);
+	}*/
+
 	__write_enable_latch();
+
 
 	Command cmd = get_default_command();
 	with_address(&cmd, address);
 
-	if(!qspi_run(&cmd, instruction)) {
+
+	if(!qspi_run(&cmd, ERASE_SUBSECTOR)) {
 		flash_fatal(ERROR_ERASE | ERROR_RUN);
 	}
 

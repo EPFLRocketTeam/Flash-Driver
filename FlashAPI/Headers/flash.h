@@ -12,7 +12,7 @@
 #define DEBUG
 
 
-#define TEST_GENTLE_ADDR     0x00FFF000
+#define TEST_GENTLE_ADDR     0x00000000
 #define TEST_INVASIVE_ADDR   0x00FFE000
 
 

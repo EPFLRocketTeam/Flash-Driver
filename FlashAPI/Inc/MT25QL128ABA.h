@@ -34,8 +34,8 @@
 
 
 // Erase commands
-#define ERASE_SUBSECTOR 0x52
-#define ERASE_SECTOR 0x20 // 4KB subsector
+#define ERASE_SUBSECTOR 0x20
+#define ERASE_SECTOR 0xD8 // 4KB subsector
 
 
 

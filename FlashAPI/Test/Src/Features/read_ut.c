@@ -29,7 +29,7 @@ void __write_once() {
 
 
 	flash_erase_subsector(TEST_GENTLE_ADDR);
-	flash_write(TEST_GENTLE_ADDR, buffer, GENTLE_TEST_BUFFER_SIZE);
+	//flash_write(TEST_GENTLE_ADDR, buffer, GENTLE_TEST_BUFFER_SIZE);
 }
 
 uint8_t test_read() {

@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#define MIN (1LL) << 63
+
 
 #define TEST_NOT_PERFORMED    	0
 #define TEST_RUNNING	     	1
@@ -18,10 +20,10 @@
 #define TEST_FAILED			    -1
 
 
-#define SCORE_CORE_FEATURES	 	(-1LL) >> 56 // 8 most critical features
-#define SCORE_BASIC_FEATURES	(-1LL) >> 48 // 16 most important features
-#define SCORE_LEGACY_FEATURES	(-1LL) >> 32 // all legacy features
-#define SCORE_EXT_FEATURES	 	(-1LL) >> 16 // all legacy and extension features
+#define SCORE_CORE_FEATURES	 	~(MIN >> 55) // 8 most critical features
+#define SCORE_BASIC_FEATURES	~(MIN >> 46) // 16 most important features
+#define SCORE_LEGACY_FEATURES	~(MIN >> 31) // all legacy features
+#define SCORE_EXT_FEATURES	 	~(MIN >> 15) // all legacy and extension features
 #define SCORE_ALL_FEATURES	    (-1LL)
 
 

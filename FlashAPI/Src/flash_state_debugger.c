@@ -51,7 +51,7 @@ void flash_success() {
 }
 
 void flash_error() {
-	__set_color(255, 255, 0);
+	__set_color(255, 31, 0);
 }
 
 void flash_fatal(uint32_t error_code) {

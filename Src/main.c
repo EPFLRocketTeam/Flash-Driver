@@ -161,8 +161,9 @@ int main(void)
   flash_ready();
 
   test_result result = test_features(FEATURE_READ);
+  uint8_t satisfying = is_test_result_satisfying(result, SCORE_CORE_FEATURES);
 
-  if(is_test_result_satisfying(result, SCORE_CORE_FEATURES)) {
+  if(satisfying) {
 	  flash_success();
   } else {
 	  flash_error();

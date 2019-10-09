@@ -112,6 +112,11 @@ void Error_Handler(void);
 
 /* USER CODE END Private defines */
 
+
+#define DEBUG
+
+
+
 #ifdef __cplusplus
 }
 #endif

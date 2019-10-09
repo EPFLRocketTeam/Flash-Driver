@@ -11,6 +11,16 @@
 
 #include <stdint.h>
 
+
+#define TEST_GENTLE_ADDR     0x00FFE000
+#define TEST_INVASIVE_ADDR   0x00FFF000
+
+#define GENTLE_TEST_BUFFER_SIZE 256
+#define INVASIVE_TEST_BUFFER_SIZE 256
+
+
+
+
 #define MIN (1LL) << 63
 
 
@@ -28,7 +38,7 @@
 
 
 
-#define ALL_FEATURES 			(uint64_t) -1
+#define ALL_FEATURES 			(-1LL)
 
 
 #define FEATURE_INIT 			(1L << 0)

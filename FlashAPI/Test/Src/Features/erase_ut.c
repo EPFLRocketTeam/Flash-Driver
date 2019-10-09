@@ -6,9 +6,10 @@
  */
 
 
-#include "erase_ut.h"
+#include "flash_tests.h"
 #include "flash.h"
 #include "test_utils.h"
+#include "erase_ut.h"
 
 
 #define BEGIN_ADDR TEST_INVASIVE_ADDR

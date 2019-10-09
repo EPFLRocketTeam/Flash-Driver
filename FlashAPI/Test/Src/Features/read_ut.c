@@ -7,10 +7,10 @@
 
 #include "read_ut.h"
 #include "flash.h"
+#include "flash_tests.h"
 #include "test_utils.h"
 
 
-#define GENTLE_TEST_BUFFER_SIZE 256
 #define NUM_SHIFT_TESTS 32
 
 #define WRITE_ONCE_CRC_RESULT 0x8906affc

@@ -8,9 +8,9 @@
 #ifndef READ_UT_H_
 #define READ_UT_H_
 
-#include <stdint.h>
+#include <stdbool.h>
 
-uint8_t test_read();
+bool test_read();
 
 
 #endif /* READ_UT_H_ */

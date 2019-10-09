@@ -9,6 +9,9 @@
 #define FLASH_H_
 
 
+#include <stdint.h>
+
+
 #define DEBUG
 
 

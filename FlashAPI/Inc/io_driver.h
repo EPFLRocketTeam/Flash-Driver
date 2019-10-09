@@ -34,9 +34,9 @@
  * Penultimate bits error rhythms
  */
 
-#define ERROR_READ        0b11110010	<< 8
-#define ERROR_WRITE		  0b01001111	<< 8
-#define ERROR_ERASE		  0b11100111	<< 8
+#define ERROR_READ        (0b11110010 << 8)
+#define ERROR_WRITE		  (0b01001111 << 8)
+#define ERROR_ERASE		  (0b11100111 << 8)
 
 
 

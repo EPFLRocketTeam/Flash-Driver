@@ -12,7 +12,7 @@
 
 
 #define BEGIN_ADDR TEST_INVASIVE_ADDR
-#define END_ADDR TEST_INVASIVE_ADDR + 0xFFF
+#define END_ADDR TEST_INVASIVE_ADDR + 0xF00 // Be careful: nothing happens if you try to write beyond this address
 #define INVASIVE_TEST_BUFFER_SIZE 256
 
 /*
@@ -58,6 +58,7 @@ bool test_erase() {
 	random_buffer(buffer, INVASIVE_TEST_BUFFER_SIZE);
 
 	flash_write(BEGIN_ADDR, buffer, INVASIVE_TEST_BUFFER_SIZE);
+
 	flash_write(END_ADDR - INVASIVE_TEST_BUFFER_SIZE, buffer, INVASIVE_TEST_BUFFER_SIZE);
 
 	flash_read(BEGIN_ADDR, buffer, INVASIVE_TEST_BUFFER_SIZE);
@@ -78,7 +79,7 @@ bool test_erase() {
 	 * Erase the sub-sector and check if it has really been erased.
 	 */
 
-	flash_erase_subsector(BEGIN_ADDR);
+	flash_erase_subsector(END_ADDR);
 
 	flash_read(BEGIN_ADDR, buffer, INVASIVE_TEST_BUFFER_SIZE);
 	if(!__check_erased(buffer, INVASIVE_TEST_BUFFER_SIZE)) {

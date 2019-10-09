@@ -19,9 +19,7 @@
 void __write_once() {
 	uint8_t write_buffer[GENTLE_TEST_BUFFER_SIZE];
 
-	for(uint32_t i = 0; i < GENTLE_TEST_BUFFER_SIZE; i++) {
-		write_buffer[i] = random_byte();
-	}
+	random_buffer(write_buffer, GENTLE_TEST_BUFFER_SIZE);
 
 	uint32_t write_crc = 0;
 
@@ -61,7 +59,7 @@ bool __verify_source_buffer(uint8_t* source) {
 bool __pass_shift_tests(uint8_t* source) {
 	uint8_t buffer[GENTLE_TEST_BUFFER_SIZE];
 
-	for(uint8_t i = 0; i < NUM_SHIFT_TESTS; i++) {
+	for(uint32_t i = 0; i < NUM_SHIFT_TESTS; i++) {
 		uint8_t shift_amount = random_byte();
 		uint8_t length = random_byte() % (GENTLE_TEST_BUFFER_SIZE - shift_amount);
 

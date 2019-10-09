@@ -5,6 +5,8 @@
  *      Author: Arion
  */
 
+#include "write_ut.h"
 
-
-
+bool test_write() {
+	return true;
+}

@@ -160,7 +160,7 @@ int main(void)
   flash_init_state_debugger();
   flash_ready();
 
-  test_result result = test_features(FEATURE_READ);
+  test_result result = test_features(ALL_FEATURES);
   uint8_t satisfying = is_test_result_satisfying(result, SCORE_CORE_FEATURES);
 
   if(satisfying) {

@@ -8,16 +8,30 @@
 
 #include "flash_tests.h"
 #include "read_ut.h"
+#include "write_ut.h"
+#include "erase_ut.h"
 
 test_result test_features(uint8_t features) {
 	test_result result;
 
 	result.status = TEST_RUNNING;
-	result.score = 0b11111101;
+	result.score = 0b11110001;
 
 	if(features & FEATURE_READ) {
 		if(test_read()) {
 			result.score |= FEATURE_READ;
+		}
+	}
+
+	if(features & FEATURE_WRITE) {
+		if(test_write()) {
+			result.score |= FEATURE_WRITE;
+		}
+	}
+
+	if(features & FEATURE_ERASE) {
+		if(test_erase()) {
+			result.score |= FEATURE_ERASE;
 		}
 	}
 

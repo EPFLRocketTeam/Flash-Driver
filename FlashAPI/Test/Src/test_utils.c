@@ -37,3 +37,9 @@ uint8_t random_byte() {
 	generator = (17971 * generator + 16661) & 0xFF;
 	return (uint8_t) generator;
 }
+
+void random_buffer(uint8_t* buffer, uint32_t length) {
+	for(uint32_t i = 0; i < length; i++) {
+		buffer[i] = random_byte();
+	}
+}

@@ -6,7 +6,6 @@
  */
 
 #include "io_driver.h"
-#include "quadspi.h"
 #include "flash_state.h"
 #include "MT25QL128ABA.h"
 
@@ -99,7 +98,7 @@ void flash_read(uint32_t address, uint8_t* buffer, uint32_t length) {
  *
  */
 
-void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
+void __flash_write_page(uint32_t address, uint8_t* buffer, uint32_t length) {
 	__write_enable_latch();
 
 	Command cmd = get_default_command();
@@ -133,6 +132,16 @@ void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
 
 		flash_fatal(ERROR_WRITE | ERROR_STATE);
 	}
+}
+
+void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
+	while(length > PAGE_SIZE) {
+		__flash_write_page(address, buffer, PAGE_SIZE);
+		buffer += PAGE_SIZE;
+		length -= PAGE_SIZE;
+	}
+
+	__flash_write_page(address, buffer, length);
 }
 
 

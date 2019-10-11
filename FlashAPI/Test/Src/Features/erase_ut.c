@@ -14,7 +14,6 @@
 
 #define BEGIN_ADDR TEST_INVASIVE_ADDR
 #define END_ADDR TEST_INVASIVE_ADDR + 0xF00 // Be careful: nothing happens if you try to write beyond this address
-#define INVASIVE_TEST_BUFFER_SIZE 256
 
 /*
  * In NOR flash memories, erased bits equal 1.

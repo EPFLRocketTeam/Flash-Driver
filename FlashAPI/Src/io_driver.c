@@ -115,12 +115,14 @@ void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
 		flash_fatal(ERROR_WRITE | ERROR_TRANSMIT);
 	}
 
+	/*
+	 * Checks if the controller is ready to proceed to the next command
+	 */
 	cmd = get_default_command();
 	with_data(&cmd, 1);
 
-	// Waits for the busy bit (bit 0) to be reset to 0
-	if(!qspi_poll(&cmd, READ_STATUS_REGISTER, 0, false)) {
-		flash_fatal(ERROR_WRITE | ERROR_STATE);
+	if(!qspi_poll(&cmd, READ_FLAG_STATUS_REGISTER, 7, true)) {
+		flash_fatal(ERROR_ERASE | ERROR_STATE);
 	}
 
 	uint8_t flags = __read_flags();
@@ -157,16 +159,21 @@ void __flash_erase(uint32_t instruction, uint32_t address) {
 		flash_fatal(ERROR_ERASE | ERROR_RUN);
 	}
 
+	/*
+	 * Checks if the controller is ready to proceed to the next command
+	 */
 	cmd = get_default_command();
 	with_data(&cmd, 1);
 
-	if(!qspi_poll(&cmd, READ_STATUS_REGISTER, 0, 0)) {
+	if(!qspi_poll(&cmd, READ_FLAG_STATUS_REGISTER, 7, true)) {
 		flash_fatal(ERROR_ERASE | ERROR_STATE);
 	}
 
+	/*
+	 * Checks if the protection fault flag is set
+	 */
 	uint8_t flags = __read_flags();
 
-	// Checks if the protection fault flag is set
 	if(flags & (1 << 5)) {
 		__write_disable_latch(); // Manually reset the latch
 

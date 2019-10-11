@@ -138,6 +138,7 @@ void flash_write(uint32_t address, uint8_t* buffer, uint32_t length) {
 	while(length > PAGE_SIZE) {
 		__flash_write_page(address, buffer, PAGE_SIZE);
 		buffer += PAGE_SIZE;
+		address += PAGE_SIZE;
 		length -= PAGE_SIZE;
 	}
 

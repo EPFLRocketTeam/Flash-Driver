@@ -12,11 +12,14 @@
 #include <stdint.h>
 
 
+
 #define TEST_GENTLE_ADDR     0x00FFE000
 #define TEST_INVASIVE_ADDR   0x00FFF000
 
 #define GENTLE_TEST_BUFFER_SIZE 256
-#define INVASIVE_TEST_BUFFER_SIZE 2048 + 128
+
+// For some arcane reason, something does not work with greater values. Reading beyond seem to be buggy.
+#define INVASIVE_TEST_BUFFER_SIZE (2048 + 1024 + 512 + 256)
 
 
 
